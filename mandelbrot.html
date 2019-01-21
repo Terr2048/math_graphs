@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mandelbrot set by Terr</title>
+	<style>
+	canvas {
+		border: 1px black solid;
+	}
+	</style>
+</head>
+<body>
+    <!--<canvas width="1890" height="955"></canvas>-->
+    <canvas width="1200" height="800"></canvas>
+    <script>
+		function Complex(x, y) {
+			this.x = x || 0;
+			this.y = y || 0;
+		}
+
+		Complex.prototype.abs = function() {
+			return Math.sqrt(this.x*this.x + this.y*this.y);
+		}
+
+		Complex.prototype.add = function(z) {
+			return new Complex(this.x + z.x, this.y + z.y);
+		}
+
+		Complex.prototype.sqr = function() {
+			var x = this.x*this.x - this.y*this.y;
+			var y = 2*this.x*this.y;
+			return new Complex(x, y);
+		}
+		Complex.prototype.mul = function (c) {
+		    var x = this.x * c.x - this.y * c.y;
+		    var y = this.x * c.y + this.y * c.x;
+		    return new Complex(x, y);
+		}
+
+		var canvas = document.getElementsByTagName('canvas')[0];
+		var ctx = canvas.getContext('2d');
+		const DELTA = 0.0034;
+		ctx.translate(canvas.width / 2, canvas.height / 2);
+		ctx.scale(1/DELTA, -1/DELTA);
+
+		function drawMandelbrotSet(x1, y1, x2, y2, maxi) {
+			for (let re = x1; re < x2; re += DELTA) {
+				next_c_value:
+				for (let im = y1; im < y2; im += DELTA) {
+					let z = new Complex(0, 0);
+					let c = new Complex(re, im);
+
+					for (let i = 0; i < maxi; i++) {
+						z = z.sqr().add(c); // Performs Zn+1 = (Zn)^2 + c
+						if (z.abs() > 2)
+							continue next_c_value;
+					}
+					ctx.fillRect(re, im, DELTA, DELTA);
+					//ctx.fillRect(z.x, z.y, DELTA, DELTA);
+				}
+			}
+		}
+
+		function drawJuliaSet(x1, y1, x2, y2, maxi, c) {
+			for (let re = x1; re < x2; re += DELTA) {
+				next_c_value:
+				for (let im = y1; im < y2; im += DELTA) {
+					let z = new Complex(re, im);
+
+					for (let i = 0; i < maxi; i++) {
+					    z = z.mul(z).add(c);
+						if (z.abs() > 2)
+							continue next_c_value;
+					}
+					ctx.fillRect(re, im, DELTA, DELTA);
+					//ctx.fillRect(z.x, z.y, DELTA, DELTA);
+				}
+			}
+		}
+
+		function drawLogisticSet(x1, y1, x2, y2, maxi, c) {
+			for (let re = x1; re < x2; re += DELTA) {
+				next_c_value:
+				for (let im = y1; im < y2; im += DELTA) {
+					let z = new Complex(re, im);
+
+					for (let i = 0; i < maxi; i++) {
+						z = 1 - l*z*z
+						if (z.abs() > 2)
+							continue next_c_value;
+					}
+					ctx.fillRect(re, im, DELTA, DELTA);
+					//ctx.fillRect(z.x, z.y, DELTA, DELTA);
+				}
+			}
+		}
+
+		canvas.clear = function() {
+			ctx.clearRect(-canvas.width*DELTA / 2, -canvas.height*DELTA / 2, canvas.width*DELTA, canvas.height*DELTA);
+		}
+
+
+		drawJuliaSet(-2, -2, 2, 2, 256, new Complex(-0.8, 0.15)); //Complex(-0.8, 0.15))//Complex(0.14, 0.75))
+        //drawMandelbrotSet(-2, -2, 2, 2, 50);
+        //canvas.clear(); drawJuliaSet(-2, -2, 2, 2, 64, new Complex(0.115,0.755))
+
+    </script>
+</body>
+
+</html>
+
